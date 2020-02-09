@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.AreaMapper">
+
+    <sql id="whereSql">
+
+        <where>
+            <if test="name != null and name != ''">
+                and name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="minCreateDate != null">
+                <![CDATA[
+              and createDate >= #{minCreateDate}
+              ]]>
+            </if>
+            <if test="maxCreateDate != null">
+                <![CDATA[
+            and createDate <= #{maxCreateDate}
+            ]]>
+            </if>
+            <if test="minUpdateDate != null">
+                <![CDATA[
+              and updateDate >= #{minUpdateDate}
+              ]]>
+            </if>
+            <if test="maxUpdateDate != null">
+                <![CDATA[
+            and updateDate <= #{maxUpdateDate}
+            ]]>
+            </if>
+
+        </where>
+
+    </sql>
+
+    <select id="queryAreaList" parameterType="ConditionQuery" resultType="Area">
+        select * from fh_movie_area
+        <include refid="whereSql"/>
+        limit #{start},#{length}
+    </select>
+    
+    <select id="queryAreaCount" parameterType="ConditionQuery" resultType="Long">
+        select count(*) from fh_movie_area
+    </select>
+
+    <select id="querySingleArea" parameterType="Integer" resultType="Area">
+        select * from fh_movie_area
+        where id= #{whatever}
+    </select>
+
+    <insert id="addArea" parameterType="Area">
+        insert into fh_movie_area (name,create_time)
+               values (#{name},#{createTime});
+    </insert>
+
+    <update id="updateArea" parameterType="Area">
+        update fh_movie_area set
+               name = #{name},update_time = #{updateTime}
+               where id=#{id}
+    </update>
+    
+    <delete id="deleteArea" parameterType="Integer">
+        delete from fh_movie_area
+        where id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.MovieMapper">
+
+    <sql id="whereSql">
+
+        <where>
+            <if test="name != null and name != ''">
+                and name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="minCreateDate != null">
+                <![CDATA[
+              and createDate >= #{minCreateDate}
+              ]]>
+            </if>
+            <if test="maxCreateDate != null">
+                <![CDATA[
+            and createDate <= #{maxCreateDate}
+            ]]>
+            </if>
+            <if test="minUpdateDate != null">
+                <![CDATA[
+              and updateDate >= #{minUpdateDate}
+              ]]>
+            </if>
+            <if test="maxUpdateDate != null">
+                <![CDATA[
+            and updateDate <= #{maxUpdateDate}
+            ]]>
+            </if>
+
+        </where>
+
+    </sql>
+
+    <select id="queryMovieList" parameterType="ConditionQuery" resultType="Movie">
+        select fm.*,fmt.name as "nameOfTheMovie",fma.name as "areaOfTheMovie"
+        from fh_movie fm
+        left join fh_movie_type fmt on fm.type_id = fmt.id
+        left join fh_movie_area fma on fm.area_id = fma.id
+        <include refid="whereSql"/>
+        limit #{start},#{length}
+    </select>
+    
+    <select id="queryMovieCount" parameterType="ConditionQuery" resultType="Long">
+        select count(*) from fh_movie
+    </select>
+
+    <select id="queryMovieTypeList" resultType="MovieType">
+        select * from fh_movie_type
+    </select>
+
+    <select id="queryAreaList" resultType="Area">
+        select * from fh_movie_area
+    </select>
+
+    <select id="querySingleMovie" parameterType="Integer" resultType="Movie">
+        select * from fh_movie
+        where id= #{whatever}
+    </select>
+
+    <insert id="addMovie" parameterType="Movie">
+        insert into fh_movie (name,mins,main_images,is_hot,grade,show_time,
+               introduce,create_time,area_id,type_id)
+               values (#{name},#{mins},#{mainImages},#{isHot},#{grade},#{showTime},
+                #{introduce},#{createTime},#{areaId},#{typeId});
+    </insert>
+    
+    <delete id="deleteMovie" parameterType="Integer">
+        delete from fh_movie
+        where id = #{id}
+    </delete>
+
+    <select id="getMovieById" parameterType="int" resultType="movie">
+        select * from fh_movie where id = #{id}
+    </select>
+
+
+    <update id="updateMovie" parameterType="Movie">
+        update fh_movie set
+        name=#{name},mins=#{mins},main_images=#{mainImages},is_hot=#{isHot},grade=#{grade},show_time=#{showTime},
+        introduce=#{introduce},create_time=#{createTime},update_time=#{updateTime},area_id=#{areaId},type_id=#{typeId}
+        where id = #{id}
+    </update>
+
+</mapper>

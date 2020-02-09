@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.MovieTypeMapper">
+
+    <sql id="whereSql">
+
+        <where>
+            <if test="name != null and name != ''">
+                and name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="minCreateDate != null">
+                <![CDATA[
+              and createDate >= #{minCreateDate}
+              ]]>
+            </if>
+            <if test="maxCreateDate != null">
+                <![CDATA[
+            and createDate <= #{maxCreateDate}
+            ]]>
+            </if>
+            <if test="minUpdateDate != null">
+                <![CDATA[
+              and updateDate >= #{minUpdateDate}
+              ]]>
+            </if>
+            <if test="maxUpdateDate != null">
+                <![CDATA[
+            and updateDate <= #{maxUpdateDate}
+            ]]>
+            </if>
+
+        </where>
+
+    </sql>
+
+    <select id="queryMovieTypeList" parameterType="ConditionQuery" resultType="MovieType">
+        select * from fh_movie_type
+        <include refid="whereSql"/>
+        limit #{start},#{length}
+    </select>
+    
+    <select id="queryMovieTypeCount" parameterType="ConditionQuery" resultType="Long">
+        select count(*) from fh_movie_type
+    </select>
+
+    <select id="querySingleMovieType" parameterType="Integer" resultType="MovieType">
+        select * from fh_movie_type
+        where id= #{whatever}
+    </select>
+
+    <insert id="addMovieType" parameterType="MovieType">
+        insert into fh_movie_type (name,create_time)
+               values (#{name},#{createTime});
+    </insert>
+
+    <update id="updateMovieType" parameterType="MovieType">
+        update fh_movie_type set
+               name=#{name},update_time=#{updateTime}
+               where id = #{id}
+    </update>
+
+    <delete id="deleteMovieType" parameterType="Integer">
+        delete from fh_movie_type
+        where id = #{id}
+    </delete>
+</mapper>
